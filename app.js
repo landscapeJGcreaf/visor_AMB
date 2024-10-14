@@ -10,8 +10,8 @@ var osmLayer = L.tileLayer('https://tile.openstreetmap.bzh/ca/{z}/{x}/{y}.png', 
 osmLayer.addTo(map);
 
 // Afegir WMS ortofoto Catalunya 25cm 2023 
-var wmsLayer = L.tileLayer.wms('http://geoserveis.icgc.cat/icc_ortohistorica/wms/service?', {
-    layers: 'orto25c2018', // Cambia por el nombre de la capa WMS que deseas mostrar
+var wmsLayer = L.tileLayer.wms('https://geoserveis.icgc.cat/servei/catalunya/orto-territorial/wms?', {
+    layers: 'ortofoto_25cm_color_2023', // Cambia por el nombre de la capa WMS que deseas mostrar
     format: 'image/png',
     transparent: true,
     attribution: 'Dades proporcionades per <a href="https://www.icgc.cat/ca">Institut Cartogràfic i Geològic de Catalunya</a>',
@@ -35,9 +35,10 @@ fetch('data/ambit_amb.geojson')
         ambitAmbLayer = L.geoJSON(data, {
             style: {
                 color: '#de1a13', // Color de los límites o contornos
-                weight: 2,
+                weight: 2.5,
                 opacity: 1,
                 fillColor: '#82a217',
+                fillOpacity: 0
             },
             onEachFeature: function (feature, layer) {
                 // Añadir información de popup, si es necesario
@@ -96,7 +97,7 @@ fetch('data/ambit_amb.geojson')
         var overlayMaps = {
             "Malla revisions 2023": geoJsonLayer,
             "Àmbit AMB": ambitAmbLayer,
-            "Ortofoto de Catalunya color any 2018": wmsLayer,
+            "Ortofoto de Catalunya 2023": wmsLayer,
         };
 
         // Añadir el control de capas al mapa

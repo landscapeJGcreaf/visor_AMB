@@ -8,8 +8,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <style>
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Evita el desplazamiento hacia abajo */
+        }
+
+        h1 {
+            margin: 0;
+            padding: 10px; /* Ajusta este valor para mantener un pequeño margen si lo necesitas */
+            text-align: center;
+        }
+
         #map {
-            height: 100vh;
+            height: calc(100vh - 70px);
             width: 100%;
         }
 
