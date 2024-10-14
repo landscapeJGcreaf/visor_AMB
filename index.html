@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvis AMB</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <style>
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+
+        .zoom-home-button {
+            position: absolute;
+            bottom: -48px;
+            left: 1px;
+            z-index: 1001; /* Asegúrate de que el botón esté encima de otros elementos */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px; /* Espacio entre los controles */
+        }
+
+        .zoom-home-button button {
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 5px 10px; /* Cambia el padding para ajustar el tamaño */
+        }
+
+        .zoom-home-button button i {
+            font-size: 18x; /* Ajusta el tamaño del ícono según sea necesario */
+        }
+
+        /* Estilo para el control de búsqueda */
+        .geocoder {
+            position: absolute;
+            bottom: 10px; /* Ajusta para que esté en la esquina inferior */
+            left: 10px; /* Mantiene en la izquierda */
+            z-index: 1001; /* Asegúrate de que esté encima de otros elementos */
+            width: calc(100% - 12px); /* Asegúrate de que se ajuste con el borde */
+        }
+
+        .geocoder input {
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px 10px; /* Cambia el padding para ajustar el tamaño */
+            width: auto; /* Hace que ambos controles ocupen el mismo ancho */
+        }
+
+         /* Mantener el control de capas abierto */
+         .leaflet-control-layers-expanded {
+            display: block !important;
+        }
+
+        #logos {
+         position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1002; /* Asegúrate de que esté por encima del mapa */
+        }
+
+        #logos img {
+        height: 40px; /* Ajusta el tamaño de los logos según lo necesites */
+        margin-left: 10px; /* Espacio entre los logos */
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Visor canvis Àrea Metropolitana de Barcelona</h1>
+    <div id="map"></div>
+
+    <div id="logos">
+        <img src="img/creaf_logo.jpg" alt="Logo CREAF" id="logo-creaf">
+        <img src="img/amb_logo.png" alt="Logo AMB" id="logo-amb">
+    </div>
+
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="app.js"></script> <!-- Archivo JavaScript externo -->
+</body>
+</html>
+
