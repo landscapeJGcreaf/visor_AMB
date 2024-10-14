@@ -23,8 +23,31 @@
         }
 
         #map {
-            height: calc(100vh - 70px);
+            height: 65vh; /*calc(100vh - 70px)*/;
             width: 100%;
+        }
+
+        #table-container {
+        height: 30vh; /* Ajusta la altura de la tabla al 30% de la ventana */
+        overflow-y: auto; /* Permite el desplazamiento vertical si hay demasiadas filas */
+        width: 100%;
+        background-color: #f9f9f9;
+        border-top: 1px solid #ccc; /* Añadir un borde para diferenciar el mapa de la tabla */
+        }
+
+        #data-table {
+        width: 50%;
+        border-collapse: collapse;
+        text-align: left;
+        }
+
+        #data-table th, #data-table td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        }
+
+        #data-table th {
+        background-color: #e0e0e0;
         }
 
         .zoom-home-button {
@@ -89,7 +112,20 @@
 <body>
     <h1>Visor canvis Àrea Metropolitana de Barcelona</h1>
     <div id="map"></div>
-
+    <!-- Contenedor de la tabla para los datos del CSV -->
+    <div id="table-container">
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>Nombre Simple 2020</th>
+                    <th>Nombre Simple 2023</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Las filas del CSV se añadirán aquí dinámicamente -->
+            </tbody>
+        </table>
+    </div>
     <div id="logos">
         <img src="img/creaf_logo.jpg" alt="Logo CREAF" id="logo-creaf">
         <img src="img/amb_logo.png" alt="Logo AMB" id="logo-amb">
@@ -98,7 +134,9 @@
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="app.js"></script> <!-- Archivo JavaScript externo -->
+    <script src="csv-loader.js"></script>
 </body>
 </html>
 
