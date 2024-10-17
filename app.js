@@ -6,20 +6,21 @@ var osmLayer = L.tileLayer('https://tile.openstreetmap.bzh/ca/{z}/{x}/{y}.png', 
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles courtesy of <a href="https://www.openstreetmap.cat" target="_blank">Breton OpenStreetMap Team</a>'
 });
 
-// Afegir la capa base al mapa
+// Añadir la capa base al mapa
 osmLayer.addTo(map);
 
-// Afegir WMS ortofoto Catalunya 25cm 2023 
+// Añadir WMS ortofoto Catalunya 25cm 2023 
 var wmsLayer = L.tileLayer.wms('https://geoserveis.icgc.cat/servei/catalunya/orto-territorial/wms?', {
-    layers: 'ortofoto_25cm_color_2023', // Cambia por el nombre de la capa WMS que deseas mostrar
+    layers: 'ortofoto_25cm_color_2023',
     format: 'image/png',
     transparent: true,
     attribution: 'Dades proporcionades per <a href="https://www.icgc.cat/ca">Institut Cartogràfic i Geològic de Catalunya</a>',
 });
 
-// Inicializar variables para almacenar las capas GeoJSON
+// Inicializar variables para almacenar las capas GeoJSON y la leyenda
 let geoJsonLayer;
 let ambitAmbLayer;
+let legend; // Definimos la variable legend fuera de la función
 
 // Cargar el archivo GeoJSON ambit_amb
 fetch('data/ambit_amb.geojson')
@@ -30,29 +31,26 @@ fetch('data/ambit_amb.geojson')
         return response.json();
     })
     .then(data => {
-        console.log('Datos de ambit_amb:', data); // Depuración
-        // Crear la capa GeoJSON para ambit_amb
         ambitAmbLayer = L.geoJSON(data, {
             style: {
-                color: '#de1a13', // Color de los límites o contornos
+                color: '#de1a13',
                 weight: 2.5,
                 opacity: 1,
                 fillColor: '#82a217',
                 fillOpacity: 0
             },
             onEachFeature: function (feature, layer) {
-                // Añadir información de popup, si es necesario
-                layer.bindPopup('<b>Ambit AMB:</b> ' + feature.properties.nombre); // Ajusta el nombre de la propiedad según tu GeoJSON
+                layer.bindPopup('<b>Ambit AMB:</b> ' + feature.properties.nombre);
             }
         });
 
-        ambitAmbLayer.addTo(map); // Añadir la capa al mapa si es necesario
+        ambitAmbLayer.addTo(map);
 
-        // Ahora cargar el archivo GeoJSON de puntos
         return fetch('data/malla_revisions_2023.geojson');
     })
     .then(response => response.json())
     .then(data => {
+
         // Función para definir el estilo de los puntos
         function style(feature) {
             var value = feature.properties.revisio;
@@ -78,20 +76,46 @@ fetch('data/ambit_amb.geojson')
             }
         }
 
-        // Crear el GeoJSON layer para los puntos de revisión
+        // Crear la capa GeoJSON para los puntos de revisión
         geoJsonLayer = L.geoJSON(data, {
             pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, style(feature)); // Usar circleMarker para puntos redondos
+                return L.circleMarker(latlng, style(feature));
             },
             onEachFeature: function (feature, layer) {
-                // Mostrar las propiedades 'nom_simple' y 'revision' en el popup
                 layer.bindPopup('<b>Categoria nom_simple:</b> ' + feature.properties.nom_simple + '<br>' +
                                 '<b>Categoria revisió:</b> ' + feature.properties.revision);
             }
         });
 
-        // Añadir la capa geoJsonLayer al mapa si es necesario
-        geoJsonLayer.addTo(map);
+        // Función para mostrar la leyenda al activar la capa desde el panel de control de capas
+        function showLegend() {
+            // Eliminar la leyenda existente, si ya está presente
+            if (legend) {
+                map.removeControl(legend);
+            }
+
+            // Crear la nueva leyenda
+            legend = L.control({ position: 'bottomright' });
+
+            legend.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'info legend');
+                var categories = [0, 2];
+                var labels = ['#82a217', '#e31a1c'];
+                var descriptions = ['Sense canvi', 'Canvi coberta'];
+
+                div.innerHTML = '<strong>Canvi cobertes 2023</strong><br>';
+
+                for (var i = 0; i < categories.length; i++) {
+                    div.innerHTML +=
+                        '<i style="background:' + labels[i] + '"></i> ' +
+                        descriptions[i] + '<br>';
+                }
+
+                return div;
+            };
+
+            legend.addTo(map);
+        }
 
         // Crear un objeto para las capas overlay
         var overlayMaps = {
@@ -105,14 +129,30 @@ fetch('data/ambit_amb.geojson')
             "Mapa base OpenStreetMap": osmLayer
         }, overlayMaps).addTo(map);
 
-        // Abrir el control de capas por defecto
         layersControl.expand();
+
+        // Evento que se dispara cuando se activa la capa "Malla revisions 2023"
+        map.on('overlayadd', function (eventLayer) {
+            if (eventLayer.name === "Malla revisions 2023") {
+                showLegend();  // Mostrar la leyenda cuando se activa la capa
+            }
+        });
+
+        // Evento que se dispara cuando se desactiva la capa "Malla revisions 2023"
+        map.on('overlayremove', function (eventLayer) {
+            if (eventLayer.name === "Malla revisions 2023") {
+                if (legend) {
+                    map.removeControl(legend);  // Eliminar la leyenda cuando se desactiva la capa
+                }
+            }
+        });
+
     })
     .catch(error => {
         console.error('Error al cargar los archivos GeoJSON:', error);
     });
 
-       
+
 // Crear un botón para volver al zoom inicial
 var zoomHomeButton = L.control({ position: 'topleft' });
 
@@ -120,7 +160,7 @@ zoomHomeButton.onAdd = function () {
     var div = L.DomUtil.create('div', 'zoom-home-button');
     div.innerHTML = '<button title="Zoom inicial" style="background-color: white; border: 1px solid #ccc; padding: 5px; border-radius: 5px; cursor: pointer;"><i class="fas fa-home"></i></button>';
     div.onclick = function () {
-        map.setView([41.34657, 2.14325], 11); // Cambia la posición y el zoom inicial si es necesario
+        map.setView([41.34657, 2.14325], 11);
     };
     return div;
 };
@@ -132,26 +172,24 @@ var geocoder = L.Control.geocoder({
     defaultMarkGeocode: false
 });
 
-// Crear el contenedor del control de búsqueda
 var geocoderControl = L.control({ position: 'bottomleft' });
 
 geocoderControl.onAdd = function (map) {
     var container = L.DomUtil.create('div', 'geocoder');
-    container.setAttribute('title', 'Cerca per municipi'); // Añadir el atributo title
-    container.appendChild(geocoder.onAdd(map)); // Añadir el control de búsqueda al contenedor
+    container.setAttribute('title', 'Cerca per municipi');
+    container.appendChild(geocoder.onAdd(map));
     return container;
 };
 
-// Añadir el control de búsqueda al mapa
 geocoderControl.addTo(map);
 
-// Agregar un evento para manejar la búsqueda
 geocoder.on('markgeocode', function (e) {
     var bbox = e.geocode.bbox;
     map.fitBounds(bbox);
 });
 
-// Asegurarse de que el botón de inicio esté debajo del control de zoom
 zoomHomeButton.addTo(map);
+
+
 
 
