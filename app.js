@@ -82,8 +82,9 @@ fetch('data/ambit_amb.geojson')
                 return L.circleMarker(latlng, style(feature));
             },
             onEachFeature: function (feature, layer) {
-                layer.bindPopup('<b>Categoria nom_simple:</b> ' + feature.properties.nom_simple + '<br>' +
-                                '<b>Categoria revisió:</b> ' + feature.properties.revision);
+                layer.bindPopup('<b>Categoria 2023:</b> ' + (feature.properties.nom_simple || 'Sense dades') + '<br>' +
+                '<b>Categoria 2020:</b> ' + (feature.properties.nom_simp_1 || 'Sense dades') + '<br>' +
+                '<b>Situació:</b> ' + (feature.properties.situacio || 'Sense canvis'));
             }
         });
 
